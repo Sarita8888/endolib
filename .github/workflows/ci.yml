@@ -1,12 +1,20 @@
 name: CI
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
     steps:
       - uses: actions/checkout@v4
 
@@ -15,13 +23,18 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      # ✅ add this step to make pnpm available
-      - uses: pnpm/action-setup@v4
+      # ✅ Install a standalone pnpm binary and put it on PATH
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 9
+          standalone: true   # <— important
 
-      - run: corepack enable
-      - run: pnpm install
+      # ✅ Sanity check so we fail early if pnpm isn't on PATH
+      - run: pnpm -v
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm lint
@@ -35,15 +48,24 @@ jobs:
   docker-build:
     needs: ci
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: pnpm/action-setup@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 9
+          standalone: true
+
       - uses: docker/setup-buildx-action@v3
+
       - name: Build API image (no push)
         uses: docker/build-push-action@v6
         with:
