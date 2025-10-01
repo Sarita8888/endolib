@@ -17,21 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1) Put pnpm on PATH first (no 'version' here since package.json declares it)
+      # 1) Setup pnpm from package.json's packageManager (no version param)
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          standalone: true           # self-contained binary on PATH
+          standalone: true
           package_json_path: package.json
 
-      - run: pnpm -v                 # sanity check
+      - run: pnpm -v
 
-      # 2) Now enable Node + pnpm cache
+      # 2) Setup Node (NO cache here)
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install
         run: pnpm install --frozen-lockfile
