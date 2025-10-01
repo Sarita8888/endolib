@@ -17,16 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1) Put pnpm on PATH first
+      # 1) Put pnpm on PATH first (no 'version' here since package.json declares it)
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
-          standalone: true
+          standalone: true           # self-contained binary on PATH
+          package_json_path: package.json
 
-      - run: pnpm -v
+      - run: pnpm -v                 # sanity check
 
-      # 2) Now it’s safe to enable setup-node’s pnpm cache
+      # 2) Now enable Node + pnpm cache
       - uses: actions/setup-node@v4
         with:
           node-version: 20
