@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@fastify/cors": "^9.0.0",
-    "@fastify/swagger": "^9.5.2",
-    "@fastify/swagger-ui": "^5.2.3",
+    "@fastify/swagger": "^8.15.0",
+    "@fastify/swagger-ui": "^1.10.2",
     "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
     "pg": "^8.16.3",
